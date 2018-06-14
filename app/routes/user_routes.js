@@ -29,7 +29,8 @@ module.exports = function (app, db) {
 
 
     app.post('/users', (req, res) => {
-        const expectedFields = ['email', 'password', 'name', 'type'];
+        const expectedFields = ['email', 'password', 'name', 'address', 'district',
+                                'city', 'zipcode', 'telephone', 'description'];
 
         if (!utils.isValidRequest(req.body, expectedFields)) {
             res.status(400).send({ 'error': 'Expected field is missing' });
@@ -40,7 +41,12 @@ module.exports = function (app, db) {
             email: req.body.email,
             password: utils.hash(req.body.password),
             name: req.body.name,
-            type: req.body.type
+            address: req.body.address,
+            district: req.body.district,
+            city: req.body.city,
+            zipcode: req.body.zipcode,
+            telephone: req.body.telephone,
+            description: req.body.description
         };
 
         db.collection('users').save(user, (err, result) => {
@@ -58,6 +64,21 @@ module.exports = function (app, db) {
         console.log("details");
         console.log(details);
         db.collection('users').findOne(details, (err, result) => {
+            if (err) {
+                res.json({ 'error': err });
+                return;
+            }
+            if (!result) {
+                res.status(401).json({ 'error': 'Invalid request' });
+                return;
+            }
+            res.json(result);
+        });
+    });
+
+    app.get('/users', (req, res) => {
+
+        db.collection('users').find({}).toArray (function (err, result) {
             if (err) {
                 res.json({ 'error': err });
                 return;

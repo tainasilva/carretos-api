@@ -2,37 +2,39 @@ const ObjectID = require('mongodb').ObjectID;
 const utils = require('../services/utils');
 
 module.exports = (app, db) => {
-    app.post('/advertisement', (req, res) => {
-        const expectedFields = ['idUser','title', 'description', 'nameCompany', 'telephone', 'regionServed'];
+    app.post('/freight', (req, res) => {
+        const expectedFields = ['description', 'nameCompany', 'telephone', 'regionServed', 'email',
+                                'password'];
 
         if (!utils.isValidRequest(req.body, expectedFields)) {
             res.status(400).send({ 'error': 'Expected field is missing' });
             return;
         }
 
-        const advertisement = {
-            idUser: req.body.idUser,
+        const freight = {
             title: req.body.title,
             description: req.body.description,
             nameCompany: req.body.nameCompany,
             telephone: req.body.telephone,
-            regionServed: req.body.regionServed
+            regionServed: req.body.regionServed,
+            email: req.body.email,
+            password: req.body.password
         };
 
-        db.collection('advertisement').save(advertisement, (err, result) => {
+        db.collection('freight').save(freight, (err, result) => {
             if (err) {
                 res.status(500).send({ 'error': err });
                 return;
             }
-            res.status(200).send('Advertisement saved to database');
+            res.status(200).send('Freight saved to database');
         });
     });
 
-    app.get('/advertisement/:id', (req, res) => {
+    app.get('/freight/:id', (req, res) => {
         const id = req.params.id;
-        const details = { 'idUser' : id };
+        const details = { '_id': new ObjectID(id) };
         
-        db.collection('advertisement').find(details).toArray(function(err, result) {
+        db.collection('freight').findOne(details, (err, result) => {
             if (err) {
                 res.json({ 'error': err });
                 return;
@@ -45,9 +47,9 @@ module.exports = (app, db) => {
         });
     });
 
-    app.get('/advertisement', (req, res) => {
+    app.get('/freight', (req, res) => {
 
-        db.collection('advertisement').find({}).toArray (function (err, result) {
+        db.collection('freight').find({}).toArray (function (err, result) {
             if (err) {
                 res.json({ 'error': err });
                 return;
