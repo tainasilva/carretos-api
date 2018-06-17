@@ -30,7 +30,7 @@ module.exports = function (app, db) {
 
     app.post('/users', (req, res) => {
         const expectedFields = ['email', 'password', 'name', 'address', 'district',
-                                'city', 'zipcode', 'telephone', 'description'];
+                                'city', 'state', 'zipcode', 'telephone', 'description'];
 
         if (!utils.isValidRequest(req.body, expectedFields)) {
             res.status(400).send({ 'error': 'Expected field is missing' });
@@ -44,9 +44,11 @@ module.exports = function (app, db) {
             address: req.body.address,
             district: req.body.district,
             city: req.body.city,
+            state: req.body.state,
             zipcode: req.body.zipcode,
             telephone: req.body.telephone,
-            description: req.body.description
+            description: req.body.description,
+            gender: req.body.gender
         };
 
         db.collection('users').save(user, (err, result) => {

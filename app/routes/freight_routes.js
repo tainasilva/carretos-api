@@ -62,4 +62,21 @@ module.exports = (app, db) => {
         });
     });
 
+    app.get('/freight/region/:region', (req, res) => {
+        const region = req.params.region;
+        const details = { 'regionServed': region };
+        console.log(details);
+        db.collection('freight').findOne(details, (err, result) => {
+            if (err) {
+                res.json({ 'error': err });
+                return;
+            }
+            if (!result) {
+                res.status(401).json({ 'error': 'Invalid request' });
+                return;
+            }
+            res.json(result);
+        });
+    });
+
 }
